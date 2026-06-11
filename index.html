@@ -182,13 +182,13 @@
         var inputVal = document.getElementById('deviceInput').value.trim();
         if (inputVal === "") { alert("Vui lòng nhập tên dòng máy!"); return; }
         
-        var general = getRandomInt(1, 200);
-        var redDot = getRandomInt(1, 200);
-        var scope2x = getRandomInt(1, 200);
-        var scope4x = getRandomInt(1, 200);
-        var awm = getRandomInt(1, 200);
-        var look = getRandomInt(1, 200);
-        var buttonSize = getRandomInt(1, 50) + "%";
+        var general = getRandomInt(185, 200);
+        var redDot = getRandomInt(180, 200);
+        var scope2x = getRandomInt(175, 190);
+        var scope4x = getRandomInt(165, 185);
+        var awm = getRandomInt(25, 150);
+        var look = getRandomInt(80, 140);
+        var buttonSize = getRandomInt(10, 50) + "%";
 
         document.getElementById('resModel').innerText = inputVal.toUpperCase();
         document.getElementById('valGeneral').innerText = general;
@@ -205,7 +205,7 @@
     }
 
     function showGuide() {
-        alert("Đang tải tệp cấu hình VIP HIẾU LIVE...\n\nHướng dẫn kích hoạt vào máy:\n1. Mở 'Cài đặt' trên iPhone.\n2. Chọn mục 'Đã tải về hồ sơ' nằm ngay dưới tên iCloud.\n3. Nhấn 'Cài đặt' ở góc trên cùng bên phải.");
+        alert("Đang tải tệp cấu hình VIP NGUYENLONG.LIOS...\n\nHướng dẫn kích hoạt vào máy:\n1. Mở 'Cài đặt' trên iPhone.\n2. Chọn mục 'Đã tải về hồ sơ' nằm ngay dưới tên iCloud.\n3. Nhấn 'Cài đặt' ở góc trên cùng bên phải.");
     }
 
     function backToSearch() {
