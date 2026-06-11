@@ -2,216 +2,292 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Hệ Thống Độ Nhạy VIP - NGUYENLONG.LIOS</title>
     <style>
-        /* Giao diện Dark Mode cơ bản, không màu sắc sặc sỡ, không hiệu ứng chạy động */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: #00FFFF; 
-            color: #ffffff; 
-            margin: 0; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            box-sizing: border-box; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0b0d12;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        
-        .container { 
-            width: 100%; 
-            max-width: 450px; 
-            background: #1a1d24; 
-            border-radius: 15px; 
-            padding: 25px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
-            box-sizing: border-box; 
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #1a1d24;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
         }
-        
-        h2 { text-align: center; color: #ff4a4a; margin: 0 0 5px 0; text-transform: uppercase; font-size: 20px; }
-        .sub-title { text-align: center; color: #ffc107; font-size: 13px; font-weight: bold; margin-bottom: 25px; text-transform: uppercase; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 10px; color: #a0a5b5; font-size: 14px; }
-        
-        input[type="text"] { 
-            width: 100%; 
-            padding: 14px; 
-            border: 2px solid #2e3440; 
-            background: #252932; 
-            color: white; 
-            border-radius: 10px; 
-            font-size: 16px; 
-            box-sizing: border-box; 
+
+        h2 {
+            text-align: center;
+            color: #ff4a4a;
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+            font-size: 20px;
         }
-        
-        button { 
-            width: 100%; 
-            padding: 14px; 
-            background: #ff4a4a; 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 15px; 
+
+        .sub-title {
+            text-align: center;
+            color: #ffc107;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-transform: uppercase;
         }
-        
-        /* Chế độ ẩn hiện màn hình độc lập */
-        .app-section { display: none; }
-        
-        .info-box { background: #252932; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        .info-title { font-weight: bold; color: #ff4a4a; margin-bottom: 10px; text-transform: uppercase; font-size: 15px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        .stat-item { background: #1e222b; padding: 10px; border-radius: 8px; font-size: 14px; }
-        .stat-item span { display: block; color: #a0a5b5; font-size: 11px; margin-bottom: 4px; }
-        .stat-value { font-weight: bold; font-size: 16px; }
-        
-        .btn-install { background: #28a745; display: block; text-align: center; text-decoration: none; color: white; padding: 14px; border-radius: 10px; font-weight: bold; margin-top: 15px; }
-        
-        .suggestions { margin-top: 10px; font-size: 12px; color: #a0a5b5; }
-        .tag { display: inline-block; background: #252932; padding: 5px 8px; border-radius: 5px; margin: 4px 4px 0 0; cursor: pointer; border: 1px solid #2e3440; }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #a0a5b5;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #2e3440;
+            background: #252932;
+            color: white;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #ff4a4a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .app-section {
+            display: none;
+        }
+
+        .info-box {
+            background: #252932;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #ff4a4a;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 15px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: #1e222b;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .stat-item span {
+            display: block;
+            color: #a0a5b5;
+            font-size: 11px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .btn-install {
+            background: #28a745;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .suggestions {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #a0a5b5;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #252932;
+            padding: 5px 8px;
+            border-radius: 5px;
+            margin: 4px 4px 0 0;
+            cursor: pointer;
+            border: 1px solid #2e3440;
+            color: #e0e0e0;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h2>ĐỘ NHẠY IPHONE</h2>
+        <div class="sub-title">BY NGUYENLONG.LIOS</div>
 
-<div class="container">
-    <h2>ĐỘ NHẠY IPHONE</h2>
-    <div class="sub-title">BY NGUYENLONG.LIOS</div>
-    
-    <!-- MÀN HÌNH 1: NHẬP KEY (Gợi ý: MUA KEY IB CHỦ BOX) -->
-    <div class="app-section" id="keySection" style="display: block;">
-        <div class="form-group">
-            <label>🔑 Nhập Key Kích Hoạt (Buy Key Vip Ib NGUYENLONG.LIOS - HSD: VĨNH VIỄN):</label>
-            <input type="text" id="activationKey" placeholder="MUA KEY IB ZALO 0933653553">
-            <button onclick="verifyKey()">KÍCH HOẠT KEY</button>
+        <div class="app-section" id="keySection" style="display: block;">
+            <div class="form-group">
+                <label>🔑 Nhập Key Kích Hoạt (Buy Key Vip Ib NGUYENLONG.LIOS - HSD: VĨNH VIỄN):</label>
+                <input type="text" id="activationKey" placeholder="MUA KEY IB ZALO 0933653553" autocomplete="off">
+                <button onclick="verifyKey()">KÍCH HOẠT KEY</button>
+            </div>
+        </div>
+
+        <div class="app-section" id="searchSection">
+            <div class="form-group">
+                <label>📱 Nhập Tên Dòng Máy iPhone Để Lấy Độ Nhạy:</label>
+                <input type="text" id="deviceInput" placeholder="Ví dụ: iPhone 6, iPhone 17 Pro Max..." autocomplete="off">
+                <div class="suggestions">
+                    Gợi ý nhanh:
+                    <span class="tag" onclick="selectDevice('iPhone 6Plus')">iPhone 6Plus</span>
+                    <span class="tag" onclick="selectDevice('iPhone 12 Pro Max')">iPhone 12 Pro Max</span>
+                    <span class="tag" onclick="selectDevice('iPhone 17 Pro Max')">iPhone 17 Pro Max</span>
+                </div>
+                <button onclick="getSensitivity()">TRA CỨU ĐỘ NHẠY & CẤU HÌNH</button>
+            </div>
+        </div>
+
+        <div class="app-section" id="resultSection">
+            <div class="info-box">
+                <div class="info-title">Thông Tin Thiết Bị VIP</div>
+                <div class="grid-2">
+                    <div class="stat-item"><span>Dòng Máy Kích Hoạt</span><div class="stat-value" id="resModel">-</div></div>
+                    <div class="stat-item"><span>Thời Hạn Sử Dụng</span><div class="stat-value" style="color: #28a745;">Vĩnh Viễn</div></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">🎯 Độ Nhạy Kéo Tâm NGUYENLONG.LIOS (MAX 200)</div>
+                <div class="grid-2">
+                    <div class="stat-item"><span>Nhìn Xung Quanh</span><div class="stat-value" id="valGeneral">200</div></div>
+                    <div class="stat-item"><span>Red Dot Sight</span><div class="stat-value" id="valRedDot">195</div></div>
+                    <div class="stat-item"><span>Ống Ngắm 2x</span><div class="stat-value" id="val2x">185</div></div>
+                    <div class="stat-item"><span>Ống Ngắm 4x</span><div class="stat-value" id="val4x">178</div></div>
+                    <div class="stat-item"><span>Ống Ngắm Súng Ngắm</span><div class="stat-value" id="valAwm">100</div></div>
+                    <div class="stat-item"><span>Nhìn</span><div class="stat-value" id="valLook">130</div></div>
+                </div>
+                <div class="stat-item" style="margin-top: 10px; background: #1e222b;">
+                    <span>Kích Thước Nút Bắn Chuẩn</span>
+                    <div class="stat-value" id="valButton" style="color: #ffc107;">45%</div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">⚙️ Thông Số Định Cấu Hình Máy</div>
+                <div class="grid-2">
+                    <div class="stat-item"><span>DPI CHẠY NGẦM</span><div class="stat-value">930 DPI</div></div>
+                    <div class="stat-item"><span>TỈ LỆ HEADSHOT</span><div class="stat-value">100% TLHS</div></div>
+                </div>
+            </div>
+
+            <a href="AIMLOCKMETAV6.mobileconfig" class="btn-install" onclick="showGuide(); return false;">CÀI ĐẶT AIMLOCKMETAV6.mobileconfig VÀO MÁY</a>
+            <button onclick="backToSearch()" style="background: #343a40; margin-top: 10px;">TRA CỨU MÁY KHÁC</button>
         </div>
     </div>
 
-    <!-- MÀN HÌNH 2: NHẬP TÊN THIẾT BỊ -->
-    <div class="app-section" id="searchSection">
-        <div class="form-group">
-            <label>📱 Nhập Tên Dòng Máy iPhone Để Lấy Độ Nhạy:</label>
-            <input type="text" id="deviceInput" placeholder="Ví dụ: iPhone 6, iPhone 17 Pro Max..." autocomplete="off">
-            <div class="suggestions">
-                Gợi ý nhanh: 
-                <span class="tag" onclick="selectDevice('iPhone 11')">iPhone 6Plus</span>
-                <span class="tag" onclick="selectDevice('iPhone 13 Pro Max')">iPhone 12 Pro Max</span>
-                <span class="tag" onclick="selectDevice('iPhone 15 Pro Max')">iPhone 17 Pro Max</span>
-            </div>
-            <button onclick="getSensitivity()">TRA CỨU ĐỘ NHẠY & CẤU HÌNH</button>
-        </div>
-    </div>
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
 
-    <!-- MÀN HÌNH 3: HIỂN THỊ KẾT QUẢ ĐỘ NHẠY MAX 200 -->
-    <div class="app-section" id="resultSection">
-        <div class="info-box">
-            <div class="info-title">Thông Tin Thiết Bị VIP</div>
-            <div class="grid-2">
-                <div class="stat-item"><span>Dòng Máy Kích Hoạt</span><div class="stat-value" id="resModel">-</div></div>
-                <div class="stat-item"><span>Thời Hạn Sử Dụng</span><div class="stat-value" style="color: #28a745;">Vĩnh Viễn</div></div>
-            </div>
-        </div>
+        function verifyKey() {
+            var inputField = document.getElementById('activationKey');
+            if (!inputField) return;
 
-        <div class="info-box">
-            <div class="info-title">🎯 Độ Nhạy Kéo Tâm NGUYENLONG.LIOS (MAX 200)</div>
-            <div class="grid-2">
-                <div class="stat-item"><span>Nhìn Xung Quanh</span><div class="stat-value" id="valGeneral">200</div></div>
-                <div class="stat-item"><span>Red Dot Sight</span><div class="stat-value" id="valRedDot">195</div></div>
-                <div class="stat-item"><span>Ống Ngắm 2x</span><div class="stat-value" id="val2x">185</div></div>
-                <div class="stat-item"><span>Ống Ngắm 4x</span><div class="stat-value" id="val4x">178</div></div>
-                <div class="stat-item"><span>Ống Ngắm Súng Ngắm</span><div class="stat-value" id="valAwm">100</div></div>
-                <div class="stat-item"><span>Nhìn</span><div class="stat-value" id="valLook">130</div></div>
-            </div>
-            <div class="stat-item" style="margin-top: 10px; background: #1e222b;">
-                <span>Kích Thước Nút Bắn Chuẩn</span>
-                <div class="stat-value" id="valButton" style="color: #ffc107;">45%</div>
-            </div>
-        </div>
+            var userKey = inputField.value.trim().toLowerCase();
 
-        <div class="info-box">
-            <div class="info-title">⚙️ Thông Số Định Cấu Hình Máy</div>
-            <div class="grid-2">
-                <div class="stat-item"><span>DPI CHẠY NGẦM</span><div class="stat-value">930 DPI</div></div>
-                <div class="stat-item"><span>TỈ LỆ HEADSHOT</span><div class="stat-value">100% TLHS</div></div>
-            </div>
-        </div>
+            if (userKey.indexOf("nguyenlong") === 0) {
+                var numberPart = userKey.substring(10);
+                var keyNum = parseInt(numberPart, 10);
 
-        <a href="vip.mobileconfig" class="btn-install" onclick="showGuide()">CÀI ĐẶT AIMLOCKMETAV6.MOBILECONFIG VÀO MÁY</a>
-        <button onclick="backToSearch()" style="background: #343a40; margin-top: 10px;">TRA CỨU MÁY KHÁC</button>
-    </div>
-</div>
+                if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 100 && "nguyenlong" + keyNum === userKey) {
+                    document.getElementById('keySection').style.display = 'none';
+                    document.getElementById('searchSection').style.display = 'block';
+                    return;
+                }
+            }
 
-<script>
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+            alert("❌ Mã khóa không chính xác!\nVui lòng nhập lại mã khóa mới.");
+        }
 
-    function verifyKey() {
-        var inputField = document.getElementById('activationKey');
-        if (!inputField) return;
-        
-        // Nhận giá trị, viết thường hoàn toàn, xóa khoảng cách thừa
-        var userKey = inputField.value.trim().toLowerCase();
-        
-        // Kiểm tra logic: Phải bắt đầu bằng nguyenlong
-        if (userKey.indexOf("nguyenlong") === 0) {
-            var numberPart = userKey.substring(8); // Cắt lấy chuỗi số sau chữ nguyenlong
-            var keyNum = parseInt(numberPart, 10);
-            
-            // Nếu đúng là số từ 1 đến 100 và chuỗi ráp lại trùng khớp 100%
-            if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 100 && "nguyenlong" + keyNum === userKey) {
-                // Chuyển màn hình độc lập
-                document.getElementById('keySection').style.display = 'none';
-                document.getElementById('searchSection').style.display = 'block';
+        function selectDevice(name) {
+            document.getElementById('deviceInput').value = name;
+        }
+
+        function getSensitivity() {
+            var inputVal = document.getElementById('deviceInput').value.trim();
+            if (inputVal === "") {
+                alert("Vui lòng nhập tên dòng máy!");
                 return;
             }
+
+            var general = getRandomInt(185, 200);
+            var redDot = getRandomInt(180, 200);
+            var scope2x = getRandomInt(175, 190);
+            var scope4x = getRandomInt(165, 185);
+            var awm = getRandomInt(25, 150);
+            var look = getRandomInt(80, 140);
+            var buttonSize = getRandomInt(10, 50) + "%";
+
+            document.getElementById('resModel').innerText = inputVal.toUpperCase();
+            document.getElementById('valGeneral').innerText = general;
+            document.getElementById('valRedDot').innerText = redDot;
+            document.getElementById('val2x').innerText = scope2x;
+            document.getElementById('val4x').innerText = scope4x;
+            document.getElementById('valAwm').innerText = awm;
+            document.getElementById('valLook').innerText = look;
+            document.getElementById('valButton').innerText = buttonSize;
+
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
         }
-        
-        // Nếu không thỏa mãn điều kiện trên thì báo lỗi
-        alert("❌ Mã khóa không chính xác!\nVui lòng nhập lại mã khóa mới.");
-    }
 
-    function selectDevice(name) {
-        document.getElementById('deviceInput').value = name;
-    }
+        function showGuide() {
+            alert("Đang tải tệp cấu hình VIP NGUYENLONG.LIOS...\n\nHướng dẫn kích hoạt vào máy:\n1. Mở 'Cài đặt' trên iPhone.\n2. Chọn mục 'Đã tải về hồ sơ' nằm ngay dưới tên iCloud.\n3. Nhấn 'Cài đặt' ở góc trên cùng bên phải.");
+        }
 
-    function getSensitivity() {
-        var inputVal = document.getElementById('deviceInput').value.trim();
-        if (inputVal === "") { alert("Vui lòng nhập tên dòng máy!"); return; }
-        
-        var general = getRandomInt(185, 200);
-        var redDot = getRandomInt(180, 200);
-        var scope2x = getRandomInt(175, 190);
-        var scope4x = getRandomInt(165, 185);
-        var awm = getRandomInt(25, 150);
-        var look = getRandomInt(80, 140);
-        var buttonSize = getRandomInt(10, 50) + "%";
-
-        document.getElementById('resModel').innerText = inputVal.toUpperCase();
-        document.getElementById('valGeneral').innerText = general;
-        document.getElementById('valRedDot').innerText = redDot;
-        document.getElementById('val2x').innerText = scope2x;
-        document.getElementById('val4x').innerText = scope4x;
-        document.getElementById('valAwm').innerText = awm;
-        document.getElementById('valLook').innerText = look;
-        document.getElementById('valButton').innerText = buttonSize;
-
-        // 🛠️ ĐÃ SỬA LỖI TẠI ĐÂY (Xóa bỏ chữ .style thừa gây liệt code)
-        document.getElementById('searchSection').style.display = 'none';
-        document.getElementById('resultSection').style.display = 'block';
-    }
-
-    function showGuide() {
-        alert("Đang tải tệp cấu hình VIP NGUYENLONG.LIOS...\n\nHướng dẫn kích hoạt vào máy:\n1. Mở 'Cài đặt' trên iPhone.\n2. Chọn mục 'Đã tải về hồ sơ' nằm ngay dưới tên iCloud.\n3. Nhấn 'Cài đặt' ở góc trên cùng bên phải.");
-    }
-
-    function backToSearch() {
-        document.getElementById('deviceInput').value = ""; 
-        document.getElementById('resultSection').style.display = 'none';
-        document.getElementById('searchSection').style.display = 'block';
-    }
-</script>
+        function backToSearch() {
+            document.getElementById('deviceInput').value = "";
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('searchSection').style.display = 'block';
+        }
+    </script>
 </body>
+</html>
