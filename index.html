@@ -156,9 +156,9 @@
         // Nhận giá trị, viết thường hoàn toàn, xóa khoảng cách thừa
         var userKey = inputField.value.trim().toLowerCase();
         
-        // Kiểm tra logic: Phải bắt đầu bằng phamhieu
+        // Kiểm tra logic: Phải bắt đầu bằng nguyenlong
         if (userKey.indexOf("nguyenlong") === 0) {
-            var numberPart = userKey.substring(8); // Cắt lấy chuỗi số sau chữ phamhieu
+            var numberPart = userKey.substring(8); // Cắt lấy chuỗi số sau chữ nguyenlong
             var keyNum = parseInt(numberPart, 10);
             
             // Nếu đúng là số từ 1 đến 100 và chuỗi ráp lại trùng khớp 100%
