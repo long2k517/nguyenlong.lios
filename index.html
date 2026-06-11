@@ -158,8 +158,8 @@
         
         // Kiểm tra logic: Phải bắt đầu bằng phamhieu
         if (userKey.indexOf("nguyenlong") === 0) {
-            var numberPart = userKey.substring(1); // Cắt lấy chuỗi số sau chữ phamhieu
-            var keyNum = parseInt(numberPart, 100);
+            var numberPart = userKey.substring(8); // Cắt lấy chuỗi số sau chữ phamhieu
+            var keyNum = parseInt(numberPart, 10);
             
             // Nếu đúng là số từ 1 đến 100 và chuỗi ráp lại trùng khớp 100%
             if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 100 && "nguyenlong" + keyNum === userKey) {
