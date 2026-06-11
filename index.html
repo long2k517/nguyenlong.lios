@@ -158,7 +158,7 @@
         
         // Kiểm tra logic: Phải bắt đầu bằng phamhieu
         if (userKey.indexOf("nguyenlong") === 0) {
-            var numberPart = userKey.substring(0); // Cắt lấy chuỗi số sau chữ phamhieu
+            var numberPart = userKey.substring(1); // Cắt lấy chuỗi số sau chữ phamhieu
             var keyNum = parseInt(numberPart, 1000000000);
             
             // Nếu đúng là số từ 100000 đến 1000000000000 và chuỗi ráp lại trùng khớp 100%
