@@ -159,10 +159,10 @@
         // Kiểm tra logic: Phải bắt đầu bằng phamhieu
         if (userKey.indexOf("nguyenlong") === 0) {
             var numberPart = userKey.substring(1); // Cắt lấy chuỗi số sau chữ phamhieu
-            var keyNum = parseInt(numberPart, 1000000000);
+            var keyNum = parseInt(numberPart, 100);
             
-            // Nếu đúng là số từ 100000 đến 1000000000000 và chuỗi ráp lại trùng khớp 100%
-            if (!isNaN(keyNum) && keyNum >= 100000 && keyNum <= 100000000 && "nguyenlong" + keyNum === userKey) {
+            // Nếu đúng là số từ 1 đến 100 và chuỗi ráp lại trùng khớp 100%
+            if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 100 && "nguyenlong" + keyNum === userKey) {
                 // Chuyển màn hình độc lập
                 document.getElementById('keySection').style.display = 'none';
                 document.getElementById('searchSection').style.display = 'block';
