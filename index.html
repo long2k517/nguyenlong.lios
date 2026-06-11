@@ -162,6 +162,11 @@
             font-size: 12px;
             color: #a0a5b5;
         }
+        .countdown {
+            color: #ffc107;
+            font-weight: bold;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -223,6 +228,7 @@
                 </div>
                 <button onclick="getSensitivity()">TRA CỨU ĐỘ NHẠY & CẤU HÌNH</button>
             </div>
+            <div id="activeKeyInfo" style="margin-top:10px; color:#a0a5b5; font-size:13px; text-align:center;"></div>
         </div>
 
         <!-- MÀN HÌNH KẾT QUẢ -->
@@ -231,7 +237,7 @@
                 <div class="info-title">Thông Tin Thiết Bị VIP</div>
                 <div class="grid-2">
                     <div class="stat-item"><span>Dòng Máy Kích Hoạt</span><div class="stat-value" id="resModel">-</div></div>
-                    <div class="stat-item"><span>Thời Hạn Sử Dụng</span><div class="stat-value" style="color: #28a745;">Vĩnh Viễn</div></div>
+                    <div class="stat-item"><span>Thời Hạn Sử Dụng</span><div class="stat-value countdown" id="expiryCountdown">Đang tải...</div></div>
                 </div>
             </div>
             <div class="info-box">
@@ -263,79 +269,91 @@
     </div>
 
     <script>
-        // ===== KHỞI TẠO DỮ LIỆU TỪ LOCALSTORAGE =====
+        // ===== CẤU HÌNH LƯU TRỮ =====
         var STORAGE_KEY = "nguyenlong_keys_db";
         var VISITOR_KEY = "nguyenlong_visitor_count";
         var DEVICE_ID_KEY = "nguyenlong_device_id";
-
-        // Lấy hoặc tạo deviceId duy nhất cho thiết bị này
-        function getDeviceId() {
-            var deviceId = localStorage.getItem(DEVICE_ID_KEY);
-            if (!deviceId) {
-                deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem(DEVICE_ID_KEY, deviceId);
-            }
-            return deviceId;
-        }
         var currentDeviceId = getDeviceId();
+        var currentActiveKey = null;   // lưu tên key đang active
+        var keysDatabase = loadKeysDatabase();
 
-        // Hàm tải keysDatabase từ localStorage
+        // ===== KHỞI TẠO =====
+        cleanExpiredKeys();
+        incrementVisitorCount();
+        startGlobalCountdown();
+
+        // ===== HÀM TIỆN ÍCH =====
+        function getDeviceId() {
+            var id = localStorage.getItem(DEVICE_ID_KEY);
+            if (!id) {
+                id = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem(DEVICE_ID_KEY, id);
+            }
+            return id;
+        }
+
         function loadKeysDatabase() {
             var stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                try {
-                    return JSON.parse(stored);
-                } catch(e) { return {}; }
-            }
-            return {};
+            return stored ? JSON.parse(stored) : {};
         }
 
-        // Hàm lưu keysDatabase vào localStorage
-        function saveKeysDatabase(db) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        function saveKeysDatabase() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(keysDatabase));
         }
 
-        // Khởi tạo keysDatabase từ localStorage, tự động xóa key hết hạn
-        var keysDatabase = loadKeysDatabase();
-        cleanExpiredKeys();
-
-        // Dọn dẹp key đã hết hạn (timestamp hiện tại > expiry)
         function cleanExpiredKeys() {
             var now = Date.now();
             var changed = false;
             for (var key in keysDatabase) {
                 if (keysDatabase.hasOwnProperty(key)) {
-                    var data = keysDatabase[key];
-                    if (data.expiry !== null && data.expiry <= now) {
+                    var exp = keysDatabase[key].expiry;
+                    if (exp !== null && exp <= now) {
                         delete keysDatabase[key];
                         changed = true;
                     }
                 }
             }
-            if (changed) saveKeysDatabase(keysDatabase);
+            if (changed) saveKeysDatabase();
         }
 
-        // Tự động dọn dẹp mỗi 60 giây
-        setInterval(function() {
-            cleanExpiredKeys();
-            // Nếu đang ở panel admin thì render lại danh sách
-            if (document.getElementById('adminSection').style.display === 'block') {
-                renderAdminKeyList();
-            }
-        }, 60000);
-
-        // ===== ĐẾM LƯỢT TRUY CẬP =====
         function incrementVisitorCount() {
-            var count = parseInt(localStorage.getItem(VISITOR_KEY) || "0");
-            count += 1;
+            var count = parseInt(localStorage.getItem(VISITOR_KEY) || "0") + 1;
             localStorage.setItem(VISITOR_KEY, count.toString());
             document.getElementById('visitorCount').innerText = count;
         }
-        incrementVisitorCount(); // gọi ngay khi tải trang
 
-        // ===== HÀM TIỆN ÍCH =====
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Hàm định dạng thời gian còn lại chi tiết (năm, tháng, ngày, giờ, phút, giây)
+        function formatDetailedRemaining(expiryTimestamp) {
+            if (expiryTimestamp === null) return "Vĩnh viễn";
+            var now = Date.now();
+            var diff = expiryTimestamp - now;
+            if (diff <= 0) return "Đã hết hạn";
+
+            var seconds = Math.floor(diff / 1000);
+            var minutes = Math.floor(seconds / 60);
+            var hours = Math.floor(minutes / 60);
+            var days = Math.floor(hours / 24);
+            
+            var years = Math.floor(days / 365);
+            var months = Math.floor((days % 365) / 30);
+            var remainingDays = days % 30;
+            var remainingHours = hours % 24;
+            var remainingMinutes = minutes % 60;
+            var remainingSeconds = seconds % 60;
+
+            var parts = [];
+            if (years > 0) parts.push(years + " năm");
+            if (months > 0) parts.push(months + " tháng");
+            if (remainingDays > 0) parts.push(remainingDays + " ngày");
+            if (remainingHours > 0) parts.push(remainingHours + " giờ");
+            if (remainingMinutes > 0) parts.push(remainingMinutes + " phút");
+            parts.push(remainingSeconds + " giây");
+
+            return parts.join(", ");
         }
 
         // ===== XÁC THỰC KEY =====
@@ -343,12 +361,8 @@
             var inputField = document.getElementById('activationKey');
             if (!inputField) return;
             var userKey = inputField.value.trim();
-            if (userKey === "") {
-                alert("Vui lòng nhập key!");
-                return;
-            }
+            if (userKey === "") { alert("Vui lòng nhập key!"); return; }
 
-            // Key admin
             if (userKey === "VIP-ADMIN-NGUYENLONG-LIOS") {
                 document.getElementById('keySection').style.display = 'none';
                 document.getElementById('adminSection').style.display = 'block';
@@ -356,7 +370,6 @@
                 return;
             }
 
-            // Kiểm tra key tồn tại và còn hạn
             if (!keysDatabase.hasOwnProperty(userKey)) {
                 alert("❌ Mã khóa không chính xác!\nKey phải do Admin NGUYENLONG.LIOS cấp.\nLiên hệ ZALO 0933653553 để mua key.");
                 return;
@@ -365,70 +378,100 @@
             var keyData = keysDatabase[userKey];
             var now = Date.now();
             if (keyData.expiry !== null && keyData.expiry <= now) {
-                // Hết hạn, xóa key luôn
                 delete keysDatabase[userKey];
-                saveKeysDatabase(keysDatabase);
+                saveKeysDatabase();
                 alert("❌ Key đã hết hạn và đã bị xóa khỏi hệ thống!");
                 return;
             }
 
-            // Kiểm tra giới hạn thiết bị
             if (keyData.maxDevices > 0) {
                 if (!keyData.devices) keyData.devices = [];
-                // Nếu thiết bị này chưa có trong danh sách
                 if (keyData.devices.indexOf(currentDeviceId) === -1) {
                     if (keyData.devices.length >= keyData.maxDevices) {
-                        alert("❌ Key đã đạt giới hạn số thiết bị sử dụng (" + keyData.maxDevices + " thiết bị).");
+                        alert("❌ Key đã đạt giới hạn thiết bị sử dụng (" + keyData.maxDevices + " TB).");
                         return;
                     }
-                    // Thêm deviceId vào danh sách
                     keyData.devices.push(currentDeviceId);
-                    saveKeysDatabase(keysDatabase);
+                    saveKeysDatabase();
                 }
             }
 
-            // Hợp lệ -> chuyển sang tra cứu
+            currentActiveKey = userKey;
             document.getElementById('keySection').style.display = 'none';
             document.getElementById('searchSection').style.display = 'block';
+            updateActiveKeyInfo();
+        }
+
+        function updateActiveKeyInfo() {
+            if (!currentActiveKey) return;
+            var keyData = keysDatabase[currentActiveKey];
+            if (!keyData) {
+                // key bị xóa bất ngờ
+                logoutActiveKey();
+                return;
+            }
+            var infoDiv = document.getElementById('activeKeyInfo');
+            if (infoDiv) {
+                infoDiv.innerHTML = "Key: " + currentActiveKey + " | Hạn: " + formatDetailedRemaining(keyData.expiry);
+            }
+        }
+
+        function logoutActiveKey() {
+            currentActiveKey = null;
+            document.getElementById('searchSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('keySection').style.display = 'block';
+            document.getElementById('activationKey').value = "";
+            alert("Phiên làm việc đã kết thúc do key hết hạn hoặc bị xóa.");
+        }
+
+        // ===== QUẢN LÝ ĐẾM NGƯỢC TOÀN CỤC =====
+        function startGlobalCountdown() {
+            setInterval(function() {
+                cleanExpiredKeys();
+                if (currentActiveKey) {
+                    var keyData = keysDatabase[currentActiveKey];
+                    if (!keyData || (keyData.expiry !== null && keyData.expiry <= Date.now())) {
+                        logoutActiveKey();
+                    } else {
+                        updateActiveKeyInfo();
+                        // cập nhật countdown trên màn kết quả nếu đang hiển thị
+                        if (document.getElementById('resultSection').style.display === 'block') {
+                            document.getElementById('expiryCountdown').innerText = formatDetailedRemaining(keyData.expiry);
+                        }
+                    }
+                }
+                // cập nhật admin key list nếu admin panel đang mở
+                if (document.getElementById('adminSection').style.display === 'block') {
+                    renderAdminKeyList();
+                }
+            }, 1000);
         }
 
         // ===== CHỨC NĂNG ADMIN =====
         function adminCreateKey() {
-            var nameInput = document.getElementById('newKeyName');
-            var daysInput = document.getElementById('newKeyDays');
-            var maxDevInput = document.getElementById('newKeyMaxDevices');
-            var keyName = nameInput.value.trim();
-            var days = parseInt(daysInput.value, 10);
-            var maxDev = parseInt(maxDevInput.value, 10);
-
-            if (keyName === "") { alert("Vui lòng nhập tên key!"); return; }
+            var name = document.getElementById('newKeyName').value.trim();
+            var days = parseInt(document.getElementById('newKeyDays').value);
+            var maxDev = parseInt(document.getElementById('newKeyMaxDevices').value);
+            if (!name) { alert("Nhập tên key!"); return; }
             if (isNaN(days) || days < 0) { alert("Số ngày không hợp lệ!"); return; }
-            if (isNaN(maxDev) || maxDev < 0) { alert("Giới hạn thiết bị không hợp lệ!"); return; }
+            if (isNaN(maxDev) || maxDev < 0) { alert("Giới hạn TB không hợp lệ!"); return; }
+            if (keysDatabase.hasOwnProperty(name)) { alert("Key đã tồn tại!"); return; }
 
-            if (keysDatabase.hasOwnProperty(keyName)) {
-                alert("Key này đã tồn tại!");
-                return;
-            }
-
-            var expiryTimestamp = (days === 0) ? null : Date.now() + days * 24 * 60 * 60 * 1000;
-            keysDatabase[keyName] = {
-                expiry: expiryTimestamp,
-                maxDevices: maxDev,
-                devices: []   // danh sách deviceId đã kích hoạt
-            };
-            saveKeysDatabase(keysDatabase);
-
-            nameInput.value = "";
-            daysInput.value = "30";
-            maxDevInput.value = "1";
+            var expiry = (days === 0) ? null : Date.now() + days * 24 * 60 * 60 * 1000;
+            keysDatabase[name] = { expiry: expiry, maxDevices: maxDev, devices: [] };
+            saveKeysDatabase();
+            document.getElementById('newKeyName').value = "";
+            document.getElementById('newKeyDays').value = "30";
+            document.getElementById('newKeyMaxDevices').value = "1";
             renderAdminKeyList();
-            alert("✅ Đã tạo key " + keyName + " thành công!");
+            alert("✅ Tạo key " + name + " thành công!");
         }
 
         function adminDeleteKey(keyName) {
             if (confirm("Xóa key " + keyName + "?")) {
                 delete keysDatabase[keyName];
-                saveKeysDatabase(keysDatabase);
+                saveKeysDatabase();
                 renderAdminKeyList();
             }
         }
@@ -436,35 +479,22 @@
         function renderAdminKeyList() {
             var container = document.getElementById('keyListContainer');
             if (!container) return;
-
+            var now = Date.now();
             var keys = Object.keys(keysDatabase);
             if (keys.length === 0) {
                 container.innerHTML = '<p style="color:#a0a5b5;">Chưa có key nào được tạo.</p>';
                 return;
             }
-
-            var now = Date.now();
             var html = '';
             keys.forEach(function(key) {
                 var data = keysDatabase[key];
-                var expText;
-                if (data.expiry === null) {
-                    expText = "Vĩnh viễn";
-                } else {
-                    var remaining = data.expiry - now;
-                    if (remaining <= 0) {
-                        expText = "Đã hết hạn";
-                    } else {
-                        var daysLeft = Math.ceil(remaining / (24*60*60*1000));
-                        expText = "Còn " + daysLeft + " ngày";
-                    }
-                }
-                var devicesUsed = data.devices ? data.devices.length : 0;
-                var limitText = (data.maxDevices === 0) ? "Không giới hạn" : devicesUsed + "/" + data.maxDevices;
+                var expiryStr = formatDetailedRemaining(data.expiry);
+                var devices = data.devices ? data.devices.length : 0;
+                var limit = (data.maxDevices === 0) ? "∞" : data.maxDevices;
                 html += '<div class="key-list-item">' +
-                        '<div><strong>' + key + '</strong><br><span class="expiry">' + expText + ' | TB: ' + limitText + '</span></div>' +
-                        '<button class="delete-btn" onclick="adminDeleteKey(\'' + key + '\')">XÓA</button>' +
-                        '</div>';
+                    '<div><strong>' + key + '</strong><br><span class="expiry">' + expiryStr + '</span> | TB: ' + devices + '/' + limit + '</div>' +
+                    '<button class="delete-btn" onclick="adminDeleteKey(\'' + key + '\')">XÓA</button>' +
+                    '</div>';
             });
             container.innerHTML = html;
         }
@@ -482,27 +512,31 @@
 
         function getSensitivity() {
             var inputVal = document.getElementById('deviceInput').value.trim();
-            if (inputVal === "") {
-                alert("Vui lòng nhập tên dòng máy!");
-                return;
-            }
+            if (!inputVal) { alert("Nhập tên dòng máy!"); return; }
             document.getElementById('resModel').innerText = inputVal.toUpperCase();
-            document.getElementById('valGeneral').innerText = getRandomInt(185, 200);
-            document.getElementById('valRedDot').innerText = getRandomInt(180, 200);
-            document.getElementById('val2x').innerText = getRandomInt(175, 190);
-            document.getElementById('val4x').innerText = getRandomInt(165, 185);
-            document.getElementById('valAwm').innerText = getRandomInt(25, 150);
-            document.getElementById('valLook').innerText = getRandomInt(80, 140);
-            document.getElementById('valButton').innerText = getRandomInt(10, 50) + "%";
+            document.getElementById('valGeneral').innerText = getRandomInt(185,200);
+            document.getElementById('valRedDot').innerText = getRandomInt(180,200);
+            document.getElementById('val2x').innerText = getRandomInt(175,190);
+            document.getElementById('val4x').innerText = getRandomInt(165,185);
+            document.getElementById('valAwm').innerText = getRandomInt(25,150);
+            document.getElementById('valLook').innerText = getRandomInt(80,140);
+            document.getElementById('valButton').innerText = getRandomInt(10,50) + "%";
+            
+            // Hiển thị countdown chi tiết trên màn kết quả
+            if (currentActiveKey && keysDatabase[currentActiveKey]) {
+                document.getElementById('expiryCountdown').innerText = formatDetailedRemaining(keysDatabase[currentActiveKey].expiry);
+            } else {
+                document.getElementById('expiryCountdown').innerText = "Không xác định";
+            }
 
             document.getElementById('searchSection').style.display = 'none';
             document.getElementById('resultSection').style.display = 'block';
         }
 
         function backToSearch() {
-            document.getElementById('deviceInput').value = "";
             document.getElementById('resultSection').style.display = 'none';
             document.getElementById('searchSection').style.display = 'block';
+            updateActiveKeyInfo();
         }
     </script>
 </body>
