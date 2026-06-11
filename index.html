@@ -17,7 +17,6 @@
             min-height: 100vh;
             box-sizing: border-box;
         }
-
         .container {
             width: 100%;
             max-width: 450px;
@@ -27,7 +26,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             box-sizing: border-box;
         }
-
         h2 {
             text-align: center;
             color: #ff4a4a;
@@ -35,7 +33,6 @@
             text-transform: uppercase;
             font-size: 20px;
         }
-
         .sub-title {
             text-align: center;
             color: #ffc107;
@@ -44,18 +41,13 @@
             margin-bottom: 25px;
             text-transform: uppercase;
         }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
+        .form-group { margin-bottom: 20px; }
         label {
             display: block;
             margin-bottom: 10px;
             color: #a0a5b5;
             font-size: 14px;
         }
-
         input[type="text"], input[type="number"] {
             width: 100%;
             padding: 14px;
@@ -67,7 +59,6 @@
             box-sizing: border-box;
             outline: none;
         }
-
         button {
             width: 100%;
             padding: 14px;
@@ -81,18 +72,13 @@
             margin-top: 15px;
             text-transform: uppercase;
         }
-
-        .app-section {
-            display: none;
-        }
-
+        .app-section { display: none; }
         .info-box {
             background: #252932;
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 15px;
         }
-
         .info-title {
             font-weight: bold;
             color: #ff4a4a;
@@ -100,51 +86,25 @@
             text-transform: uppercase;
             font-size: 15px;
         }
-
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
-
         .stat-item {
             background: #1e222b;
             padding: 10px;
             border-radius: 8px;
             font-size: 14px;
         }
-
         .stat-item span {
             display: block;
             color: #a0a5b5;
             font-size: 11px;
             margin-bottom: 4px;
         }
-
-        .stat-value {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .btn-install {
-            background: #28a745;
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            color: white;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            margin-top: 15px;
-            text-transform: uppercase;
-        }
-
-        .suggestions {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #a0a5b5;
-        }
-
+        .stat-value { font-weight: bold; font-size: 16px; }
+        .suggestions { margin-top: 10px; font-size: 12px; color: #a0a5b5; }
         .tag {
             display: inline-block;
             background: #252932;
@@ -155,7 +115,6 @@
             border: 1px solid #2e3440;
             color: #e0e0e0;
         }
-
         .admin-round-board {
             width: 220px;
             height: 220px;
@@ -167,22 +126,15 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative;
             box-shadow: 0 0 20px rgba(255,74,74,0.3);
         }
-
-        .admin-round-board .key-icon {
-            font-size: 60px;
-            line-height: 1;
-        }
-
+        .admin-round-board .key-icon { font-size: 60px; line-height: 1; }
         .admin-round-board .board-label {
             color: #ffc107;
             font-weight: bold;
             margin-top: 10px;
             text-transform: uppercase;
         }
-
         .key-list-item {
             background: #252932;
             padding: 10px;
@@ -193,12 +145,7 @@
             align-items: center;
             font-size: 14px;
         }
-
-        .key-list-item .expiry {
-            color: #a0a5b5;
-            font-size: 12px;
-        }
-
+        .key-list-item .expiry { color: #a0a5b5; font-size: 12px; }
         .key-list-item .delete-btn {
             background: #ff4a4a;
             border: none;
@@ -208,6 +155,12 @@
             cursor: pointer;
             font-size: 12px;
             text-transform: uppercase;
+        }
+        .visitor-counter {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #a0a5b5;
         }
     </style>
 </head>
@@ -241,6 +194,10 @@
                 <div class="form-group">
                     <label>Thời hạn (ngày, 0 = vĩnh viễn)</label>
                     <input type="number" id="newKeyDays" placeholder="30" min="0" value="30">
+                </div>
+                <div class="form-group">
+                    <label>Giới hạn thiết bị (0 = không giới hạn)</label>
+                    <input type="number" id="newKeyMaxDevices" placeholder="1" min="0" value="1">
                 </div>
                 <button onclick="adminCreateKey()">TẠO KEY</button>
             </div>
@@ -277,7 +234,6 @@
                     <div class="stat-item"><span>Thời Hạn Sử Dụng</span><div class="stat-value" style="color: #28a745;">Vĩnh Viễn</div></div>
                 </div>
             </div>
-
             <div class="info-box">
                 <div class="info-title">🎯 Độ Nhạy Kéo Tâm NGUYENLONG.LIOS (MAX 200)</div>
                 <div class="grid-2">
@@ -293,7 +249,6 @@
                     <div class="stat-value" id="valButton" style="color: #ffc107;">45%</div>
                 </div>
             </div>
-
             <div class="info-box">
                 <div class="info-title">⚙️ Thông Số Định Cấu Hình Máy</div>
                 <div class="grid-2">
@@ -301,38 +256,99 @@
                     <div class="stat-item"><span>TỈ LỆ HEADSHOT</span><div class="stat-value">100% TLHS</div></div>
                 </div>
             </div>
-
             <button onclick="backToSearch()" style="background: #343a40; margin-top: 10px;">TRA CỨU MÁY KHÁC</button>
         </div>
+
+        <div class="visitor-counter">👁️ Lượt truy cập: <span id="visitorCount">0</span></div>
     </div>
 
     <script>
-        // CƠ SỞ DỮ LIỆU KEY (khởi tạo với một số key mẫu)
-        var keysDatabase = {
-            "KEY-2468": null,   // vĩnh viễn
-            "KEY-1357": Date.now() + 30*24*60*60*1000,
-            "KEY-9999": Date.now() + 7*24*60*60*1000,
-            "KEY-7777": null,
-            "KEY-1234": Date.now() + 1*24*60*60*1000,
-            "KEY-5678": null
-        };
+        // ===== KHỞI TẠO DỮ LIỆU TỪ LOCALSTORAGE =====
+        var STORAGE_KEY = "nguyenlong_keys_db";
+        var VISITOR_KEY = "nguyenlong_visitor_count";
+        var DEVICE_ID_KEY = "nguyenlong_device_id";
 
+        // Lấy hoặc tạo deviceId duy nhất cho thiết bị này
+        function getDeviceId() {
+            var deviceId = localStorage.getItem(DEVICE_ID_KEY);
+            if (!deviceId) {
+                deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem(DEVICE_ID_KEY, deviceId);
+            }
+            return deviceId;
+        }
+        var currentDeviceId = getDeviceId();
+
+        // Hàm tải keysDatabase từ localStorage
+        function loadKeysDatabase() {
+            var stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch(e) { return {}; }
+            }
+            return {};
+        }
+
+        // Hàm lưu keysDatabase vào localStorage
+        function saveKeysDatabase(db) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+        }
+
+        // Khởi tạo keysDatabase từ localStorage, tự động xóa key hết hạn
+        var keysDatabase = loadKeysDatabase();
+        cleanExpiredKeys();
+
+        // Dọn dẹp key đã hết hạn (timestamp hiện tại > expiry)
+        function cleanExpiredKeys() {
+            var now = Date.now();
+            var changed = false;
+            for (var key in keysDatabase) {
+                if (keysDatabase.hasOwnProperty(key)) {
+                    var data = keysDatabase[key];
+                    if (data.expiry !== null && data.expiry <= now) {
+                        delete keysDatabase[key];
+                        changed = true;
+                    }
+                }
+            }
+            if (changed) saveKeysDatabase(keysDatabase);
+        }
+
+        // Tự động dọn dẹp mỗi 60 giây
+        setInterval(function() {
+            cleanExpiredKeys();
+            // Nếu đang ở panel admin thì render lại danh sách
+            if (document.getElementById('adminSection').style.display === 'block') {
+                renderAdminKeyList();
+            }
+        }, 60000);
+
+        // ===== ĐẾM LƯỢT TRUY CẬP =====
+        function incrementVisitorCount() {
+            var count = parseInt(localStorage.getItem(VISITOR_KEY) || "0");
+            count += 1;
+            localStorage.setItem(VISITOR_KEY, count.toString());
+            document.getElementById('visitorCount').innerText = count;
+        }
+        incrementVisitorCount(); // gọi ngay khi tải trang
+
+        // ===== HÀM TIỆN ÍCH =====
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Kiểm tra key hợp lệ
+        // ===== XÁC THỰC KEY =====
         function verifyKey() {
             var inputField = document.getElementById('activationKey');
             if (!inputField) return;
             var userKey = inputField.value.trim();
-
             if (userKey === "") {
                 alert("Vui lòng nhập key!");
                 return;
             }
 
-            // Key admin đặc biệt
+            // Key admin
             if (userKey === "VIP-ADMIN-NGUYENLONG-LIOS") {
                 document.getElementById('keySection').style.display = 'none';
                 document.getElementById('adminSection').style.display = 'block';
@@ -340,39 +356,54 @@
                 return;
             }
 
-            // Kiểm tra trong database
-            if (keysDatabase.hasOwnProperty(userKey)) {
-                var expiry = keysDatabase[userKey];
-                if (expiry === null || expiry > Date.now()) {
-                    // Key hợp lệ -> chuyển sang tra cứu
-                    document.getElementById('keySection').style.display = 'none';
-                    document.getElementById('searchSection').style.display = 'block';
-                    return;
-                } else {
-                    alert("❌ Key đã hết hạn sử dụng!\nVui lòng liên hệ Admin để gia hạn.");
-                    return;
+            // Kiểm tra key tồn tại và còn hạn
+            if (!keysDatabase.hasOwnProperty(userKey)) {
+                alert("❌ Mã khóa không chính xác!\nKey phải do Admin NGUYENLONG.LIOS cấp.\nLiên hệ ZALO 0933653553 để mua key.");
+                return;
+            }
+
+            var keyData = keysDatabase[userKey];
+            var now = Date.now();
+            if (keyData.expiry !== null && keyData.expiry <= now) {
+                // Hết hạn, xóa key luôn
+                delete keysDatabase[userKey];
+                saveKeysDatabase(keysDatabase);
+                alert("❌ Key đã hết hạn và đã bị xóa khỏi hệ thống!");
+                return;
+            }
+
+            // Kiểm tra giới hạn thiết bị
+            if (keyData.maxDevices > 0) {
+                if (!keyData.devices) keyData.devices = [];
+                // Nếu thiết bị này chưa có trong danh sách
+                if (keyData.devices.indexOf(currentDeviceId) === -1) {
+                    if (keyData.devices.length >= keyData.maxDevices) {
+                        alert("❌ Key đã đạt giới hạn số thiết bị sử dụng (" + keyData.maxDevices + " thiết bị).");
+                        return;
+                    }
+                    // Thêm deviceId vào danh sách
+                    keyData.devices.push(currentDeviceId);
+                    saveKeysDatabase(keysDatabase);
                 }
             }
 
-            // Không tìm thấy key
-            alert("❌ Mã khóa không chính xác!\nKey phải do Admin NGUYENLONG.LIOS cấp.\nLiên hệ ZALO 0933653553 để mua key.");
+            // Hợp lệ -> chuyển sang tra cứu
+            document.getElementById('keySection').style.display = 'none';
+            document.getElementById('searchSection').style.display = 'block';
         }
 
         // ===== CHỨC NĂNG ADMIN =====
         function adminCreateKey() {
             var nameInput = document.getElementById('newKeyName');
             var daysInput = document.getElementById('newKeyDays');
+            var maxDevInput = document.getElementById('newKeyMaxDevices');
             var keyName = nameInput.value.trim();
             var days = parseInt(daysInput.value, 10);
+            var maxDev = parseInt(maxDevInput.value, 10);
 
-            if (keyName === "") {
-                alert("Vui lòng nhập tên key!");
-                return;
-            }
-            if (isNaN(days) || days < 0) {
-                alert("Số ngày không hợp lệ!");
-                return;
-            }
+            if (keyName === "") { alert("Vui lòng nhập tên key!"); return; }
+            if (isNaN(days) || days < 0) { alert("Số ngày không hợp lệ!"); return; }
+            if (isNaN(maxDev) || maxDev < 0) { alert("Giới hạn thiết bị không hợp lệ!"); return; }
 
             if (keysDatabase.hasOwnProperty(keyName)) {
                 alert("Key này đã tồn tại!");
@@ -380,17 +411,24 @@
             }
 
             var expiryTimestamp = (days === 0) ? null : Date.now() + days * 24 * 60 * 60 * 1000;
-            keysDatabase[keyName] = expiryTimestamp;
+            keysDatabase[keyName] = {
+                expiry: expiryTimestamp,
+                maxDevices: maxDev,
+                devices: []   // danh sách deviceId đã kích hoạt
+            };
+            saveKeysDatabase(keysDatabase);
 
             nameInput.value = "";
             daysInput.value = "30";
+            maxDevInput.value = "1";
             renderAdminKeyList();
-            alert("✅ Đã tạo key " + keyName + (expiryTimestamp ? " (hạn " + days + " ngày)" : " (vĩnh viễn)"));
+            alert("✅ Đã tạo key " + keyName + " thành công!");
         }
 
         function adminDeleteKey(keyName) {
             if (confirm("Xóa key " + keyName + "?")) {
                 delete keysDatabase[keyName];
+                saveKeysDatabase(keysDatabase);
                 renderAdminKeyList();
             }
         }
@@ -405,23 +443,26 @@
                 return;
             }
 
+            var now = Date.now();
             var html = '';
             keys.forEach(function(key) {
-                var exp = keysDatabase[key];
+                var data = keysDatabase[key];
                 var expText;
-                if (exp === null) {
+                if (data.expiry === null) {
                     expText = "Vĩnh viễn";
                 } else {
-                    var remaining = exp - Date.now();
+                    var remaining = data.expiry - now;
                     if (remaining <= 0) {
                         expText = "Đã hết hạn";
                     } else {
-                        var daysLeft = Math.ceil(remaining / (24 * 60 * 60 * 1000));
+                        var daysLeft = Math.ceil(remaining / (24*60*60*1000));
                         expText = "Còn " + daysLeft + " ngày";
                     }
                 }
+                var devicesUsed = data.devices ? data.devices.length : 0;
+                var limitText = (data.maxDevices === 0) ? "Không giới hạn" : devicesUsed + "/" + data.maxDevices;
                 html += '<div class="key-list-item">' +
-                        '<div><strong>' + key + '</strong><br><span class="expiry">' + expText + '</span></div>' +
+                        '<div><strong>' + key + '</strong><br><span class="expiry">' + expText + ' | TB: ' + limitText + '</span></div>' +
                         '<button class="delete-btn" onclick="adminDeleteKey(\'' + key + '\')">XÓA</button>' +
                         '</div>';
             });
@@ -434,7 +475,7 @@
             document.getElementById('activationKey').value = "";
         }
 
-        // ===== CÁC HÀM GIAO DIỆN CÒN LẠI =====
+        // ===== GIAO DIỆN TRA CỨU =====
         function selectDevice(name) {
             document.getElementById('deviceInput').value = name;
         }
@@ -445,23 +486,14 @@
                 alert("Vui lòng nhập tên dòng máy!");
                 return;
             }
-
-            var general = getRandomInt(185, 200);
-            var redDot = getRandomInt(180, 200);
-            var scope2x = getRandomInt(175, 190);
-            var scope4x = getRandomInt(165, 185);
-            var awm = getRandomInt(25, 150);
-            var look = getRandomInt(80, 140);
-            var buttonSize = getRandomInt(10, 50) + "%";
-
             document.getElementById('resModel').innerText = inputVal.toUpperCase();
-            document.getElementById('valGeneral').innerText = general;
-            document.getElementById('valRedDot').innerText = redDot;
-            document.getElementById('val2x').innerText = scope2x;
-            document.getElementById('val4x').innerText = scope4x;
-            document.getElementById('valAwm').innerText = awm;
-            document.getElementById('valLook').innerText = look;
-            document.getElementById('valButton').innerText = buttonSize;
+            document.getElementById('valGeneral').innerText = getRandomInt(185, 200);
+            document.getElementById('valRedDot').innerText = getRandomInt(180, 200);
+            document.getElementById('val2x').innerText = getRandomInt(175, 190);
+            document.getElementById('val4x').innerText = getRandomInt(165, 185);
+            document.getElementById('valAwm').innerText = getRandomInt(25, 150);
+            document.getElementById('valLook').innerText = getRandomInt(80, 140);
+            document.getElementById('valButton').innerText = getRandomInt(10, 50) + "%";
 
             document.getElementById('searchSection').style.display = 'none';
             document.getElementById('resultSection').style.display = 'block';
