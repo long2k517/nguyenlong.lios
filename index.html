@@ -156,7 +156,6 @@
             color: #e0e0e0;
         }
 
-        /* Bảng tròn cho Admin */
         .admin-round-board {
             width: 220px;
             height: 220px;
@@ -224,9 +223,10 @@
                 <input type="text" id="activationKey" placeholder="Nhập key do Admin cấp" autocomplete="off">
                 <button onclick="verifyKey()">KÍCH HOẠT KEY</button>
             </div>
+            <p style="color:#a0a5b5; font-size:12px; margin-top:10px;">Dùng thử key vĩnh viễn: KEY-2468</p>
         </div>
 
-        <!-- MÀN HÌNH ADMIN (chỉ hiện sau khi nhập key admin) -->
+        <!-- MÀN HÌNH ADMIN -->
         <div class="app-section" id="adminSection">
             <div class="admin-round-board">
                 <div class="key-icon">🔑</div>
@@ -253,7 +253,7 @@
             <button onclick="adminLogout()" style="background: #343a40;">ĐĂNG XUẤT ADMIN</button>
         </div>
 
-        <!-- CÁC MÀN HÌNH KHÁC (không thay đổi) -->
+        <!-- MÀN HÌNH TRA CỨU -->
         <div class="app-section" id="searchSection">
             <div class="form-group">
                 <label>📱 Nhập Tên Dòng Máy iPhone Để Lấy Độ Nhạy:</label>
@@ -268,6 +268,7 @@
             </div>
         </div>
 
+        <!-- MÀN HÌNH KẾT QUẢ -->
         <div class="app-section" id="resultSection">
             <div class="info-box">
                 <div class="info-title">Thông Tin Thiết Bị VIP</div>
@@ -307,11 +308,10 @@
     </div>
 
     <script>
-        // ===== CƠ SỞ DỮ LIỆU KEY =====
-        // Lưu trong bộ nhớ: { keyName: expiryTimestamp (null nếu vĩnh viễn) }
+        // CƠ SỞ DỮ LIỆU KEY (khởi tạo với một số key mẫu)
         var keysDatabase = {
             "KEY-2468": null,   // vĩnh viễn
-            "KEY-1357": Date.now() + 30*24*60*60*1000, // hết hạn sau 30 ngày từ lúc tải trang
+            "KEY-1357": Date.now() + 30*24*60*60*1000,
             "KEY-9999": Date.now() + 7*24*60*60*1000,
             "KEY-7777": null,
             "KEY-1234": Date.now() + 1*24*60*60*1000,
@@ -322,13 +322,18 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // ===== XÁC THỰC KEY =====
+        // Kiểm tra key hợp lệ
         function verifyKey() {
             var inputField = document.getElementById('activationKey');
             if (!inputField) return;
             var userKey = inputField.value.trim();
 
-            // Kiểm tra key admin
+            if (userKey === "") {
+                alert("Vui lòng nhập key!");
+                return;
+            }
+
+            // Key admin đặc biệt
             if (userKey === "VIP-ADMIN-NGUYENLONG-LIOS") {
                 document.getElementById('keySection').style.display = 'none';
                 document.getElementById('adminSection').style.display = 'block';
@@ -336,11 +341,11 @@
                 return;
             }
 
-            // Kiểm tra key thường có trong database và chưa hết hạn
+            // Kiểm tra trong database
             if (keysDatabase.hasOwnProperty(userKey)) {
                 var expiry = keysDatabase[userKey];
                 if (expiry === null || expiry > Date.now()) {
-                    // Key hợp lệ, chuyển sang màn hình tra cứu
+                    // Key hợp lệ -> chuyển sang tra cứu
                     document.getElementById('keySection').style.display = 'none';
                     document.getElementById('searchSection').style.display = 'block';
                     return;
@@ -350,6 +355,7 @@
                 }
             }
 
+            // Không tìm thấy key
             alert("❌ Mã khóa không chính xác!\nKey phải do Admin NGUYENLONG.LIOS cấp.\nLiên hệ ZALO 0933653553 để mua key.");
         }
 
