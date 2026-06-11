@@ -56,7 +56,7 @@
             font-size: 14px;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="number"] {
             width: 100%;
             padding: 14px;
             border: 2px solid #2e3440;
@@ -155,6 +155,61 @@
             border: 1px solid #2e3440;
             color: #e0e0e0;
         }
+
+        /* Bảng tròn cho Admin */
+        .admin-round-board {
+            width: 220px;
+            height: 220px;
+            background: #1e222b;
+            border: 3px solid #ff4a4a;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255,74,74,0.3);
+        }
+
+        .admin-round-board .key-icon {
+            font-size: 60px;
+            line-height: 1;
+        }
+
+        .admin-round-board .board-label {
+            color: #ffc107;
+            font-weight: bold;
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        .key-list-item {
+            background: #252932;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .key-list-item .expiry {
+            color: #a0a5b5;
+            font-size: 12px;
+        }
+
+        .key-list-item .delete-btn {
+            background: #ff4a4a;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -162,14 +217,43 @@
         <h2>ĐỘ NHẠY IPHONE</h2>
         <div class="sub-title">BY NGUYENLONG.LIOS</div>
 
+        <!-- MÀN HÌNH NHẬP KEY -->
         <div class="app-section" id="keySection" style="display: block;">
             <div class="form-group">
-                <label>🔑 Nhập Key Kích Hoạt (Buy Key Vip Ib NGUYENLONG.LIOS - HSD: VĨNH VIỄN):</label>
-                <input type="text" id="activationKey" placeholder="MUA KEY IB ZALO 0933653553" autocomplete="off">
+                <label>🔑 Nhập Key Kích Hoạt (Admin: VIP-ADMIN-NGUYENLONG-LIOS | Key mua: KEY-xxxx)</label>
+                <input type="text" id="activationKey" placeholder="Nhập key do Admin cấp" autocomplete="off">
                 <button onclick="verifyKey()">KÍCH HOẠT KEY</button>
             </div>
         </div>
 
+        <!-- MÀN HÌNH ADMIN (chỉ hiện sau khi nhập key admin) -->
+        <div class="app-section" id="adminSection">
+            <div class="admin-round-board">
+                <div class="key-icon">🔑</div>
+                <div class="board-label">ADMIN PANEL</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Tạo Key Mới</div>
+                <div class="form-group">
+                    <label>Tên Key (KEY-xxxx)</label>
+                    <input type="text" id="newKeyName" placeholder="KEY-1234">
+                </div>
+                <div class="form-group">
+                    <label>Thời hạn (ngày, 0 = vĩnh viễn)</label>
+                    <input type="number" id="newKeyDays" placeholder="30" min="0" value="30">
+                </div>
+                <button onclick="adminCreateKey()">TẠO KEY</button>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Danh Sách Key Đã Tạo</div>
+                <div id="keyListContainer">
+                    <p style="color:#a0a5b5;">Chưa có key nào được tạo.</p>
+                </div>
+            </div>
+            <button onclick="adminLogout()" style="background: #343a40;">ĐĂNG XUẤT ADMIN</button>
+        </div>
+
+        <!-- CÁC MÀN HÌNH KHÁC (không thay đổi) -->
         <div class="app-section" id="searchSection">
             <div class="form-group">
                 <label>📱 Nhập Tên Dòng Máy iPhone Để Lấy Độ Nhạy:</label>
@@ -217,36 +301,135 @@
                 </div>
             </div>
 
-            <a href="AIMLOCKMETAV6.mobileconfig" class="btn-install" onclick="showGuide(); return false;">CÀI ĐẶT AIMLOCKMETAV6.mobileconfig VÀO MÁY</a>
+            <a href="vip.mobileconfig" class="btn-install" onclick="showGuide(); return false;">CÀI ĐẶT AIMLOCKMETAV6.MOBILECONFIG VÀO MÁY</a>
             <button onclick="backToSearch()" style="background: #343a40; margin-top: 10px;">TRA CỨU MÁY KHÁC</button>
         </div>
     </div>
 
     <script>
+        // ===== CƠ SỞ DỮ LIỆU KEY =====
+        // Lưu trong bộ nhớ: { keyName: expiryTimestamp (null nếu vĩnh viễn) }
+        var keysDatabase = {
+            "KEY-2468": null,   // vĩnh viễn
+            "KEY-1357": Date.now() + 30*24*60*60*1000, // hết hạn sau 30 ngày từ lúc tải trang
+            "KEY-9999": Date.now() + 7*24*60*60*1000,
+            "KEY-7777": null,
+            "KEY-1234": Date.now() + 1*24*60*60*1000,
+            "KEY-5678": null
+        };
+
         function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
+        // ===== XÁC THỰC KEY =====
         function verifyKey() {
             var inputField = document.getElementById('activationKey');
             if (!inputField) return;
+            var userKey = inputField.value.trim();
 
-            var userKey = inputField.value.trim().toLowerCase();
+            // Kiểm tra key admin
+            if (userKey === "VIP-ADMIN-NGUYENLONG-LIOS") {
+                document.getElementById('keySection').style.display = 'none';
+                document.getElementById('adminSection').style.display = 'block';
+                renderAdminKeyList();
+                return;
+            }
 
-            if (userKey.indexOf("nguyenlong") === 0) {
-                var numberPart = userKey.substring(10);
-                var keyNum = parseInt(numberPart, 10);
-
-                if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 100 && "nguyenlong" + keyNum === userKey) {
+            // Kiểm tra key thường có trong database và chưa hết hạn
+            if (keysDatabase.hasOwnProperty(userKey)) {
+                var expiry = keysDatabase[userKey];
+                if (expiry === null || expiry > Date.now()) {
+                    // Key hợp lệ, chuyển sang màn hình tra cứu
                     document.getElementById('keySection').style.display = 'none';
                     document.getElementById('searchSection').style.display = 'block';
+                    return;
+                } else {
+                    alert("❌ Key đã hết hạn sử dụng!\nVui lòng liên hệ Admin để gia hạn.");
                     return;
                 }
             }
 
-            alert("❌ Mã khóa không chính xác!\nVui lòng nhập lại mã khóa mới.");
+            alert("❌ Mã khóa không chính xác!\nKey phải do Admin NGUYENLONG.LIOS cấp.\nLiên hệ ZALO 0933653553 để mua key.");
         }
 
+        // ===== CHỨC NĂNG ADMIN =====
+        function adminCreateKey() {
+            var nameInput = document.getElementById('newKeyName');
+            var daysInput = document.getElementById('newKeyDays');
+            var keyName = nameInput.value.trim();
+            var days = parseInt(daysInput.value, 10);
+
+            if (keyName === "") {
+                alert("Vui lòng nhập tên key!");
+                return;
+            }
+            if (isNaN(days) || days < 0) {
+                alert("Số ngày không hợp lệ!");
+                return;
+            }
+
+            if (keysDatabase.hasOwnProperty(keyName)) {
+                alert("Key này đã tồn tại!");
+                return;
+            }
+
+            var expiryTimestamp = (days === 0) ? null : Date.now() + days * 24 * 60 * 60 * 1000;
+            keysDatabase[keyName] = expiryTimestamp;
+
+            nameInput.value = "";
+            daysInput.value = "30";
+            renderAdminKeyList();
+            alert("✅ Đã tạo key " + keyName + (expiryTimestamp ? " (hạn " + days + " ngày)" : " (vĩnh viễn)"));
+        }
+
+        function adminDeleteKey(keyName) {
+            if (confirm("Xóa key " + keyName + "?")) {
+                delete keysDatabase[keyName];
+                renderAdminKeyList();
+            }
+        }
+
+        function renderAdminKeyList() {
+            var container = document.getElementById('keyListContainer');
+            if (!container) return;
+
+            var keys = Object.keys(keysDatabase);
+            if (keys.length === 0) {
+                container.innerHTML = '<p style="color:#a0a5b5;">Chưa có key nào được tạo.</p>';
+                return;
+            }
+
+            var html = '';
+            keys.forEach(function(key) {
+                var exp = keysDatabase[key];
+                var expText;
+                if (exp === null) {
+                    expText = "Vĩnh viễn";
+                } else {
+                    var remaining = exp - Date.now();
+                    if (remaining <= 0) {
+                        expText = "Đã hết hạn";
+                    } else {
+                        var daysLeft = Math.ceil(remaining / (24 * 60 * 60 * 1000));
+                        expText = "Còn " + daysLeft + " ngày";
+                    }
+                }
+                html += '<div class="key-list-item">' +
+                        '<div><strong>' + key + '</strong><br><span class="expiry">' + expText + '</span></div>' +
+                        '<button class="delete-btn" onclick="adminDeleteKey(\'' + key + '\')">XÓA</button>' +
+                        '</div>';
+            });
+            container.innerHTML = html;
+        }
+
+        function adminLogout() {
+            document.getElementById('adminSection').style.display = 'none';
+            document.getElementById('keySection').style.display = 'block';
+            document.getElementById('activationKey').value = "";
+        }
+
+        // ===== CÁC HÀM GIAO DIỆN CÒN LẠI =====
         function selectDevice(name) {
             document.getElementById('deviceInput').value = name;
         }
