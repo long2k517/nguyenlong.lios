@@ -167,12 +167,19 @@
             font-weight: bold;
             font-size: 14px;
         }
+        .loading-indicator {
+            text-align: center;
+            color: #ffc107;
+            display: none;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>ĐỘ NHẠY IPHONE</h2>
         <div class="sub-title">BY NGUYENLONG.LIOS</div>
+        <div class="loading-indicator" id="loadingIndicator">Đang đồng bộ dữ liệu...</div>
 
         <!-- MÀN HÌNH NHẬP KEY -->
         <div class="app-section" id="keySection" style="display: block;">
@@ -209,7 +216,7 @@
             <div class="info-box">
                 <div class="info-title">Danh Sách Key Đã Tạo</div>
                 <div id="keyListContainer">
-                    <p style="color:#a0a5b5;">Chưa có key nào được tạo.</p>
+                    <p style="color:#a0a5b5;">Đang tải...</p>
                 </div>
             </div>
             <button onclick="adminLogout()" style="background: #343a40;">ĐĂNG XUẤT ADMIN</button>
@@ -269,36 +276,106 @@
     </div>
 
     <script>
-        // ===== CẤU HÌNH LƯU TRỮ =====
-        var STORAGE_KEY = "nguyenlong_keys_db";
-        var VISITOR_KEY = "nguyenlong_visitor_count";
-        var DEVICE_ID_KEY = "nguyenlong_device_id";
+        // ===== CẤU HÌNH API (THAY ĐỔI URL NÀY THÀNH API THẬT CỦA BẠN) =====
+        var API_BASE_URL = "";  // Nếu để trống sẽ dùng localStorage như fallback
+        // Ví dụ: "https://api.nguyenlong.lios/v1"
+
         var currentDeviceId = getDeviceId();
-        var currentActiveKey = null;   // lưu tên key đang active
-        var keysDatabase = loadKeysDatabase();
+        var currentActiveKey = null;
+        var keysDatabase = {};
+        var visitorCount = 0;
 
         // ===== KHỞI TẠO =====
-        cleanExpiredKeys();
-        incrementVisitorCount();
-        startGlobalCountdown();
+        async function initApp() {
+            showLoading(true);
+            await loadKeysFromAPI();
+            await loadVisitorCountFromAPI();
+            await incrementVisitorCountAPI();
+            cleanExpiredKeys();
+            renderAdminKeyListIfNeeded();
+            updateActiveKeyInfo();
+            updateVisitorDisplay();
+            startGlobalCountdown();
+            showLoading(false);
+        }
 
-        // ===== HÀM TIỆN ÍCH =====
+        initApp();
+
+        // ===== TIỆN ÍCH =====
         function getDeviceId() {
-            var id = localStorage.getItem(DEVICE_ID_KEY);
+            var id = localStorage.getItem("nguyenlong_device_id");
             if (!id) {
                 id = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem(DEVICE_ID_KEY, id);
+                localStorage.setItem("nguyenlong_device_id", id);
             }
             return id;
         }
 
-        function loadKeysDatabase() {
-            var stored = localStorage.getItem(STORAGE_KEY);
-            return stored ? JSON.parse(stored) : {};
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        function saveKeysDatabase() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(keysDatabase));
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        // ===== API GIẢ LẬP (FALLBACK LOCALSTORAGE KHI KHÔNG CÓ API) =====
+        async function apiGet(endpoint, defaultValue) {
+            if (!API_BASE_URL) {
+                var stored = localStorage.getItem(endpoint);
+                return stored ? JSON.parse(stored) : defaultValue;
+            }
+            try {
+                var resp = await fetch(API_BASE_URL + "/" + endpoint);
+                if (!resp.ok) throw new Error("API error");
+                return await resp.json();
+            } catch (e) {
+                console.warn("API GET failed, fallback localStorage", e);
+                var stored = localStorage.getItem(endpoint);
+                return stored ? JSON.parse(stored) : defaultValue;
+            }
+        }
+
+        async function apiSet(endpoint, data) {
+            if (!API_BASE_URL) {
+                localStorage.setItem(endpoint, JSON.stringify(data));
+                return;
+            }
+            try {
+                await fetch(API_BASE_URL + "/" + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                // Đồng thời lưu localStorage làm bản sao
+                localStorage.setItem(endpoint, JSON.stringify(data));
+            } catch (e) {
+                console.warn("API SET failed, saving to localStorage only", e);
+                localStorage.setItem(endpoint, JSON.stringify(data));
+            }
+        }
+
+        async function loadKeysFromAPI() {
+            keysDatabase = await apiGet("keys", {});
+        }
+
+        async function saveKeysToAPI() {
+            await apiSet("keys", keysDatabase);
+        }
+
+        async function loadVisitorCountFromAPI() {
+            var data = await apiGet("visitor_count", { count: 0 });
+            visitorCount = data.count || 0;
+        }
+
+        async function incrementVisitorCountAPI() {
+            visitorCount += 1;
+            await apiSet("visitor_count", { count: visitorCount });
+            updateVisitorDisplay();
+        }
+
+        function updateVisitorDisplay() {
+            document.getElementById('visitorCount').innerText = visitorCount;
         }
 
         function cleanExpiredKeys() {
@@ -313,38 +390,23 @@
                     }
                 }
             }
-            if (changed) saveKeysDatabase();
+            if (changed) saveKeysToAPI();
         }
 
-        function incrementVisitorCount() {
-            var count = parseInt(localStorage.getItem(VISITOR_KEY) || "0") + 1;
-            localStorage.setItem(VISITOR_KEY, count.toString());
-            document.getElementById('visitorCount').innerText = count;
-        }
-
-        function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        // Hàm định dạng thời gian còn lại chi tiết (năm, tháng, ngày, giờ, phút, giây)
         function formatDetailedRemaining(expiryTimestamp) {
             if (expiryTimestamp === null) return "Vĩnh viễn";
-            var now = Date.now();
-            var diff = expiryTimestamp - now;
+            var diff = expiryTimestamp - Date.now();
             if (diff <= 0) return "Đã hết hạn";
-
             var seconds = Math.floor(diff / 1000);
             var minutes = Math.floor(seconds / 60);
             var hours = Math.floor(minutes / 60);
             var days = Math.floor(hours / 24);
-            
             var years = Math.floor(days / 365);
             var months = Math.floor((days % 365) / 30);
             var remainingDays = days % 30;
             var remainingHours = hours % 24;
             var remainingMinutes = minutes % 60;
             var remainingSeconds = seconds % 60;
-
             var parts = [];
             if (years > 0) parts.push(years + " năm");
             if (months > 0) parts.push(months + " tháng");
@@ -352,7 +414,6 @@
             if (remainingHours > 0) parts.push(remainingHours + " giờ");
             if (remainingMinutes > 0) parts.push(remainingMinutes + " phút");
             parts.push(remainingSeconds + " giây");
-
             return parts.join(", ");
         }
 
@@ -364,8 +425,7 @@
             if (userKey === "") { alert("Vui lòng nhập key!"); return; }
 
             if (userKey === "VIP-ADMIN-NGUYENLONG-LIOS") {
-                document.getElementById('keySection').style.display = 'none';
-                document.getElementById('adminSection').style.display = 'block';
+                navigateTo('adminSection');
                 renderAdminKeyList();
                 return;
             }
@@ -379,7 +439,7 @@
             var now = Date.now();
             if (keyData.expiry !== null && keyData.expiry <= now) {
                 delete keysDatabase[userKey];
-                saveKeysDatabase();
+                saveKeysToAPI();
                 alert("❌ Key đã hết hạn và đã bị xóa khỏi hệ thống!");
                 return;
             }
@@ -392,64 +452,50 @@
                         return;
                     }
                     keyData.devices.push(currentDeviceId);
-                    saveKeysDatabase();
+                    saveKeysToAPI();
                 }
             }
 
             currentActiveKey = userKey;
-            document.getElementById('keySection').style.display = 'none';
-            document.getElementById('searchSection').style.display = 'block';
+            navigateTo('searchSection');
             updateActiveKeyInfo();
         }
 
         function updateActiveKeyInfo() {
-            if (!currentActiveKey) return;
+            if (!currentActiveKey || !keysDatabase[currentActiveKey]) return;
             var keyData = keysDatabase[currentActiveKey];
-            if (!keyData) {
-                // key bị xóa bất ngờ
-                logoutActiveKey();
-                return;
-            }
-            var infoDiv = document.getElementById('activeKeyInfo');
-            if (infoDiv) {
-                infoDiv.innerHTML = "Key: " + currentActiveKey + " | Hạn: " + formatDetailedRemaining(keyData.expiry);
-            }
+            document.getElementById('activeKeyInfo').innerHTML = "Key: " + currentActiveKey + " | Hạn: " + formatDetailedRemaining(keyData.expiry);
         }
 
         function logoutActiveKey() {
             currentActiveKey = null;
-            document.getElementById('searchSection').style.display = 'none';
-            document.getElementById('resultSection').style.display = 'none';
-            document.getElementById('keySection').style.display = 'block';
+            navigateTo('keySection');
             document.getElementById('activationKey').value = "";
             alert("Phiên làm việc đã kết thúc do key hết hạn hoặc bị xóa.");
         }
 
-        // ===== QUẢN LÝ ĐẾM NGƯỢC TOÀN CỤC =====
+        // ===== ĐẾM NGƯỢC TOÀN CỤC =====
         function startGlobalCountdown() {
             setInterval(function() {
                 cleanExpiredKeys();
                 if (currentActiveKey) {
-                    var keyData = keysDatabase[currentActiveKey];
-                    if (!keyData || (keyData.expiry !== null && keyData.expiry <= Date.now())) {
+                    if (!keysDatabase[currentActiveKey] || (keysDatabase[currentActiveKey].expiry !== null && keysDatabase[currentActiveKey].expiry <= Date.now())) {
                         logoutActiveKey();
                     } else {
                         updateActiveKeyInfo();
-                        // cập nhật countdown trên màn kết quả nếu đang hiển thị
                         if (document.getElementById('resultSection').style.display === 'block') {
-                            document.getElementById('expiryCountdown').innerText = formatDetailedRemaining(keyData.expiry);
+                            document.getElementById('expiryCountdown').innerText = formatDetailedRemaining(keysDatabase[currentActiveKey].expiry);
                         }
                     }
                 }
-                // cập nhật admin key list nếu admin panel đang mở
                 if (document.getElementById('adminSection').style.display === 'block') {
                     renderAdminKeyList();
                 }
             }, 1000);
         }
 
-        // ===== CHỨC NĂNG ADMIN =====
-        function adminCreateKey() {
+        // ===== ADMIN =====
+        async function adminCreateKey() {
             var name = document.getElementById('newKeyName').value.trim();
             var days = parseInt(document.getElementById('newKeyDays').value);
             var maxDev = parseInt(document.getElementById('newKeyMaxDevices').value);
@@ -460,7 +506,7 @@
 
             var expiry = (days === 0) ? null : Date.now() + days * 24 * 60 * 60 * 1000;
             keysDatabase[name] = { expiry: expiry, maxDevices: maxDev, devices: [] };
-            saveKeysDatabase();
+            await saveKeysToAPI();
             document.getElementById('newKeyName').value = "";
             document.getElementById('newKeyDays').value = "30";
             document.getElementById('newKeyMaxDevices').value = "1";
@@ -468,10 +514,10 @@
             alert("✅ Tạo key " + name + " thành công!");
         }
 
-        function adminDeleteKey(keyName) {
+        async function adminDeleteKey(keyName) {
             if (confirm("Xóa key " + keyName + "?")) {
                 delete keysDatabase[keyName];
-                saveKeysDatabase();
+                await saveKeysToAPI();
                 renderAdminKeyList();
             }
         }
@@ -499,10 +545,21 @@
             container.innerHTML = html;
         }
 
+        function renderAdminKeyListIfNeeded() {
+            if (document.getElementById('adminSection').style.display === 'block') {
+                renderAdminKeyList();
+            }
+        }
+
         function adminLogout() {
-            document.getElementById('adminSection').style.display = 'none';
-            document.getElementById('keySection').style.display = 'block';
+            navigateTo('keySection');
             document.getElementById('activationKey').value = "";
+        }
+
+        // ===== ĐIỀU HƯỚNG MÀN HÌNH =====
+        function navigateTo(sectionId) {
+            document.querySelectorAll('.app-section').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
         }
 
         // ===== GIAO DIỆN TRA CỨU =====
@@ -522,20 +579,17 @@
             document.getElementById('valLook').innerText = getRandomInt(80,140);
             document.getElementById('valButton').innerText = getRandomInt(10,50) + "%";
             
-            // Hiển thị countdown chi tiết trên màn kết quả
             if (currentActiveKey && keysDatabase[currentActiveKey]) {
                 document.getElementById('expiryCountdown').innerText = formatDetailedRemaining(keysDatabase[currentActiveKey].expiry);
             } else {
                 document.getElementById('expiryCountdown').innerText = "Không xác định";
             }
 
-            document.getElementById('searchSection').style.display = 'none';
-            document.getElementById('resultSection').style.display = 'block';
+            navigateTo('resultSection');
         }
 
         function backToSearch() {
-            document.getElementById('resultSection').style.display = 'none';
-            document.getElementById('searchSection').style.display = 'block';
+            navigateTo('searchSection');
             updateActiveKeyInfo();
         }
     </script>
